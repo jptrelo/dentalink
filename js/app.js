@@ -57,13 +57,13 @@
 				position : "absolute",
 				left : 0,
 				top : event.top + "px",
-				height : event.height + "px",
-				width : "100%"
-			});
+				height : event.height + "px"
+			})
+			.addClass('col-xs-12');
 			//Append the element created
 			$(".schedule-container .column-day:eq("+event.day+")").append(eventHtml);
 
-		}
+		},
 		/**
 		 * [getEventTop Calculates the top position where an event will be added]
 		 * @param  {startDate [The start date of an event]
