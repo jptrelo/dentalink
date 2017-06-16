@@ -15,7 +15,7 @@
 			// Render schedule
 			for (var i = 0;i<24*60/this.variables.step;i++) {
 				var time = moment(this.variables.start).add(i*this.variables.step,'minutes');
-				var step_element = $("<div class='step'>"+time.format("HH:mm")+"</div>");
+				var step_element = $("<div class='step' data-hour='"+time.format("HH:mm")+"'>"+time.format("HH:mm")+"</div>");
 				step_element.css({height: this.variables.step_height+"px"});
 				$(".steps").append(step_element);
 			}
@@ -24,13 +24,69 @@
 			});
 
 			// Fetch data
+			$.getJSON("js/data.json",function(r){
+				var events = r.data;
+				//Get each event details
+				var startDate = moment(events[0].start_at);
+				var endDate = moment(events[0].due_at);
+				var day = startDate.day() - 1;
+				var positionTop = Schedule.getEventTop(startDate);
+				var eventHeight = Schedule.getEventHeight(startDate, endDate);
 
-			$.getJSON("/js/data.json",function(r){
-				console.log("Process me");
-				console.log(r);
+				//Build an object 'event', which has each event detailed information
+				var event = {
+					startDate : startDate,
+					endDate : endDate,
+					day : day,
+					top : positionTop,
+					height : eventHeight
+					};
+				Schedule.addEvent(event);
+
 			}).error(function(err){
 				console.log(err);
 			})
+		},
+		/**
+		 * [addEvent This function append an event to the schedule]
+		 * @param {event [Has each event detailed information]
+		 */
+		addEvent: function(event){
+			//Create HTML for an event
+			var eventHtml = $("<div/>").css({
+				position : "absolute",
+				left : 0,
+				top : event.top + "px",
+				height : event.height + "px",
+				width : "100%"
+			});
+			//Append the element created
+			$(".schedule-container .column-day:eq("+event.day+")").append(eventHtml);
+
+		}
+		/**
+		 * [getEventTop Calculates the top position where an event will be added]
+		 * @param  {startDate [The start date of an event]
+		 * @return {[The top position]
+		 */
+		getEventTop: function(startDate){
+			//Find and get the position of a div that has same time in attr 'data-hour' 
+			var position = $("div[data-hour='"+startDate.format("HH:mm")+"']").position();
+
+			return position.top;
+		},
+		/**
+		 * [getEventHeight Calculates the height for an event]
+		 * @param  {startDate [The start date of an event]
+		 * @param  {endDate   [The end date of an event]
+		 * @return {[The event height]
+		 */
+		getEventHeight: function(startDate, endDate){
+			//Find and get the top positions of a divs that has same time in attr 'data-hour'
+			//Subtract each position
+			var eventHeight = $("div[data-hour='"+endDate.format("HH:mm")+"']").position().top - Schedule.getEventTop(startDate);
+
+			return eventHeight;
 		}
 	}
 

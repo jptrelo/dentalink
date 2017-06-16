@@ -33,6 +33,10 @@ body {
 	border-right:0;
 }
 
+.column-day div{
+	background-color: rgb(107, 156, 238);
+}
+
 .week-header {
 	border-bottom:1px solid #ccc;
 	margin-left:40px;
