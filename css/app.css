@@ -35,6 +35,7 @@ body {
 
 .column-day div{
 	background-color: rgb(107, 156, 238);
+	border: 2px #EFEFEF solid;
 }
 
 .week-header {

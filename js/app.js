@@ -25,23 +25,27 @@
 
 			// Fetch data
 			$.getJSON("js/data.json",function(r){
-				var events = r.data;
-				//Get each event details
-				var startDate = moment(events[0].start_at);
-				var endDate = moment(events[0].due_at);
-				var day = startDate.day() - 1;
-				var positionTop = Schedule.getEventTop(startDate);
-				var eventHeight = Schedule.getEventHeight(startDate, endDate);
+				//var events = r.data;
+				r.data.forEach(function(event){
+					//Get each event details
+					var startDate = moment(event.start_at);
+					var endDate = moment(event.due_at); 
+					var positionTop = Schedule.getEventTop(startDate);
+					var eventHeight = Schedule.getEventHeight(startDate, endDate);
 
-				//Build an object 'event', which has each event detailed information
-				var event = {
-					startDate : startDate,
-					endDate : endDate,
-					day : day,
-					top : positionTop,
-					height : eventHeight
-					};
-				Schedule.addEvent(event);
+					//Build an object 'detailedEvent', which has each event detailed information
+					var detailedEvent = {
+						startDate : startDate,
+						endDate : endDate,
+						day : startDate.day() - 1,
+						top : positionTop,
+						height : eventHeight
+						};
+					Schedule.addEvent(detailedEvent);
+
+				});
+
+				Schedule.setEventsWidth();
 
 			}).error(function(err){
 				console.log(err);
@@ -54,14 +58,17 @@
 		addEvent: function(event){
 			//Create HTML for an event
 			var eventHtml = $("<div/>").css({
-				position : "absolute",
-				left : 0,
+				//position : "absolute",
+				//left : 0,
 				top : event.top + "px",
 				height : event.height + "px"
-			})
-			.addClass('col-xs-12');
+			});
+
+			var column = $(".schedule-container .column-day:eq("+event.day+")");
 			//Append the element created
-			$(".schedule-container .column-day:eq("+event.day+")").append(eventHtml);
+			column.append(eventHtml);
+
+			//Schedule.setEventsWidth(column, event);
 
 		},
 		/**
@@ -87,6 +94,28 @@
 			var eventHeight = $("div[data-hour='"+endDate.format("HH:mm")+"']").position().top - Schedule.getEventTop(startDate);
 
 			return eventHeight;
+		},
+		setEventsWidth: function(){
+
+			$($(".schedule-container").children()).each(function(){
+				
+				var column = $(this);
+				var columnEvents = column.children().length;
+
+					$(column.children()).each(function(){
+
+						console.log(this);
+					});
+
+				column.children().removeClass();
+				if (columnEvents <= 3) {
+				
+					column.children().addClass('col-xs-' + 12/columnEvents);
+				} else {
+					column.children().addClass('col-xs-4');
+				}
+
+			});
 		}
 	}
 
