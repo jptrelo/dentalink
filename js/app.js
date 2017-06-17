@@ -99,7 +99,7 @@
 		},
 		/**
 		 * [setEventsWidth Sets width of each event]
-		 * @param {eventsDay [A day to set each event up]
+		 * @param eventsDay [A day to set each event up]
 		 */
 		setEventsWidth: function(eventsDay){
 			// Loop each event to compare if it's in between anothers in the same day and position
